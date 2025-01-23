@@ -1,0 +1,111 @@
+---
+title: "Seasonal Analysis of Gun Deaths in the U.S."
+author: "Jonathan Ascona"
+format:
+  html:
+    toc: true
+---
+
+## Summary
+Gun deaths in the United States are a significant public health issue, with suicides comprising the majority of these deaths. Notably, 85% of suicides involve males. This analysis uses data from FiveThirtyEight to explore seasonal trends and demographic patterns in suicides, providing actionable insights for targeted prevention campaigns.
+
+## Data Loading and Preparation
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+url = "full_data.csv"  # Replace with your actual file path
+
+data = pd.read_csv(url)
+
+# Filter data for suicides only and clean up missing values
+suicides = data[(data['intent'] == 'Suicide') & (data['age'].notna())]
+
+# Add age groups
+suicides['age_group'] = pd.cut(
+    suicides['age'], 
+    bins=[0, 14, 34, 64, 100], 
+    labels=["0-14", "15-34", "35-64", "65+"],
+    include_lowest=True
+)
+```
+
+## Visualizations
+
+### Seasonal Trends in Suicides
+```python
+# Group by month to analyze seasonal trends
+monthly_suicides = suicides.groupby('month').size()
+
+# Plot seasonal trends in suicides
+plt.figure(figsize=(10, 6))
+plt.plot(monthly_suicides.index, monthly_suicides.values, marker='o', linestyle='-', linewidth=2)
+plt.title("Seasonal Trends in Suicides", fontsize=14)
+plt.xlabel("Month", fontsize=12)
+plt.ylabel("Number of Suicides", fontsize=12)
+plt.xticks(range(1, 13), 
+           ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+plt.grid()
+plt.show()
+```
+
+**Insight**: Suicide rates fluctuate across the months, with noticeable peaks in certain seasons. This information can help schedule campaigns during critical months.
+
+### Gender Distribution
+```python
+# Gender distribution of suicides
+gender_distribution = suicides['sex'].value_counts()
+
+# Plot gender distribution as a pie chart
+plt.figure(figsize=(8, 8))
+gender_distribution.plot(kind='pie', autopct='%1.1f%%', startangle=90, colors=['skyblue', 'pink'])
+plt.title("Gender Distribution of Suicides", fontsize=14)
+plt.ylabel("")
+plt.show()
+```
+
+**Insight**: A staggering 85% of suicides involve males, emphasizing the need for male-focused mental health campaigns.
+
+### Age Group Analysis
+```python
+# Age group distribution of suicides
+age_group_distribution = suicides['age_group'].value_counts().sort_index()
+
+# Plot age group distribution as a bar chart
+plt.figure(figsize=(10, 6))
+age_group_distribution.plot(kind='bar', color='cornflowerblue')
+plt.title("Suicides by Age Group", fontsize=14)
+plt.xlabel("Age Group", fontsize=12)
+plt.ylabel("Number of Suicides", fontsize=12)
+plt.xticks(rotation=0)
+plt.show()
+```
+
+**Insight**: Individuals aged 15–34 and 35–64 account for the majority of suicides. Campaigns should target these vulnerable age groups.
+
+### Regional Heatmap
+```python
+# Group by state and month to analyze regional patterns
+state_monthly_suicides = suicides.groupby(['place', 'month']).size().unstack(fill_value=0)
+
+# Plot heatmap of suicides by location and month
+plt.figure(figsize=(12, 8))
+sns.heatmap(state_monthly_suicides, cmap="Blues", linewidths=.5, cbar_kws={'label': 'Number of Suicides'})
+plt.title("Heatmap of Suicides by Location and Month", fontsize=14)
+plt.xlabel("Month", fontsize=12)
+plt.ylabel("Location", fontsize=12)
+plt.xticks(ticks=range(12), labels=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+plt.show()
+```
+
+**Insight**: Geographical and seasonal patterns indicate critical areas for targeted intervention, such as specific locations with high suicide rates.
+
+## Conclusion
+The analysis identifies critical trends in suicides across months, demographics, and locations. These insights can guide targeted and timely campaigns to reduce gun deaths in the U.S.
+
+## Next Steps
+1. Render this Quarto Markdown file to HTML.
+2. Push the rendered file and supporting code to the GitHub repository.
+3. Submit the GitHub link to the `.qmd` file for review.
