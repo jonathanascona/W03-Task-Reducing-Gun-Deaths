@@ -12,13 +12,20 @@ format:
     code-tools: true
 ---
 
+
+
+
 ## Summary
 
 Gun deaths in the United States are a significant public health issue, with suicides comprising the majority of these deaths. Notably, 85% of suicides involve males. This analysis uses data from FiveThirtyEight (https://fivethirtyeight.com/features/gun-deaths/) to explore seasonal trends and demographic patterns in suicides, providing actionable insights for targeted prevention campaigns.
 
 ## Data Loading and Preparation
 
-```{r}
+
+
+::: {.cell}
+
+```{.r .cell-code}
 library(ggplot2)
 library(dplyr)
 library(readr)
@@ -29,6 +36,26 @@ url <- "C:/Users/jonat/Documents/GitHub/W03-Task-Reducing-Gun-Deaths/full_data.c
 data <- read_csv(url, show_col_types = FALSE)
 
 print(head(data))
+```
+
+::: {.cell-output .cell-output-stdout}
+
+```
+# A tibble: 6 × 11
+   ...1  year month intent  police sex     age race     hispanic place education
+  <dbl> <dbl> <chr> <chr>    <dbl> <chr> <dbl> <chr>       <dbl> <chr> <chr>    
+1     1  2012 01    Suicide      0 M        34 Asian/P…      100 Home  BA+      
+2     2  2012 01    Suicide      0 F        21 White         100 Stre… Some col…
+3     3  2012 01    Suicide      0 M        60 White         100 Othe… BA+      
+4     4  2012 02    Suicide      0 M        64 White         100 Home  BA+      
+5     5  2012 02    Suicide      0 M        31 White         100 Othe… HS/GED   
+6     6  2012 02    Suicide      0 M        17 Native …      100 Home  Less tha…
+```
+
+
+:::
+
+```{.r .cell-code}
 data$month <- factor(data$month, levels = as.character(1:12), labels = month.abb)
 
 
@@ -44,12 +71,19 @@ suicides <- suicides %>%
                          labels = c("0-14", "15-34", "35-64", "65+"), 
                          include.lowest = TRUE))
 ```
+:::
+
+
 
 ## Visualizations
 
 ### Seasonal Trends in Suicides
 
-```{r}
+
+
+::: {.cell}
+
+```{.r .cell-code}
 # Group by month to analyze seasonal trends
 monthly_suicides <- suicides %>% 
   group_by(month) %>% 
@@ -70,11 +104,22 @@ ggplot(monthly_suicides, aes(x = month, y = count)) +
   theme_minimal()
 ```
 
+::: {.cell-output-display}
+![](Task_files/figure-html/unnamed-chunk-2-1.png){width=672}
+:::
+:::
+
+
+
 **Insight**: Suicide rates fluctuate across the months, with noticeable peaks in certain seasons. This information can help schedule campaigns during critical months.
 
 ### Gender Distribution
 
-```{r}
+
+
+::: {.cell}
+
+```{.r .cell-code}
 # Gender distribution of suicides
 gender_distribution <- suicides %>% 
   group_by(sex) %>% 
@@ -88,11 +133,22 @@ ggplot(gender_distribution, aes(x = "", y = count, fill = sex)) +
   theme_void()
 ```
 
+::: {.cell-output-display}
+![](Task_files/figure-html/unnamed-chunk-3-1.png){width=672}
+:::
+:::
+
+
+
 **Insight**: A staggering 85% of suicides involve males, emphasizing the need for male-focused mental health campaigns.
 
 ### Age Group Analysis
 
-```{r}
+
+
+::: {.cell}
+
+```{.r .cell-code}
 # Age group distribution of suicides
 age_group_distribution <- suicides %>% 
   group_by(age_group) %>% 
@@ -107,11 +163,22 @@ ggplot(age_group_distribution, aes(x = age_group, y = count)) +
   theme_minimal()
 ```
 
+::: {.cell-output-display}
+![](Task_files/figure-html/unnamed-chunk-4-1.png){width=672}
+:::
+:::
+
+
+
 **Insight**: Individuals aged 15–34 and 35–64 account for the majority of suicides. Campaigns should target these vulnerable age groups.
 
 ### Regional Heatmap
 
-```{r}
+
+
+::: {.cell}
+
+```{.r .cell-code}
 # Group by state and month to analyze regional patterns
 state_monthly_suicides <- suicides %>% 
   group_by(place, month) %>% 
@@ -137,6 +204,13 @@ ggplot(state_monthly_suicides_long, aes(x = month, y = place, fill = count)) +
        fill = "Number of Suicides") + 
   theme_minimal()
 ```
+
+::: {.cell-output-display}
+![](Task_files/figure-html/unnamed-chunk-5-1.png){width=672}
+:::
+:::
+
+
 
 **Insight**: Geographical and seasonal patterns indicate critical areas for targeted intervention, such as specific locations with high suicide rates.
 
